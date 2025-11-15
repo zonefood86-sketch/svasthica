@@ -138,10 +138,20 @@ header {
 }
 
 nav {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.logo {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
 }
 
 .logo {
@@ -200,6 +210,35 @@ nav {
     background: var(--primary);
     margin: 3px 0;
     transition: 0.3s;
+}
+
+/* Logo image in header */
+.logo-img {
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  object-fit: cover;
+  display: inline-block;
+  vertical-align: middle;
+  box-shadow: 0 6px 18px rgba(10,18,10,0.06);
+  border: 1px solid rgba(0,0,0,0.04);
+  margin-right: 10px;
+}
+
+/* ensure brand text lines up */
+.brand-name {
+  font-weight: 800;
+  font-size: 1.05rem;
+  color: var(--primary);
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+/* small-screen adjustments to keep logo within header */
+@media (max-width: 900px) {
+  .logo-img { width: 40px; height: 40px; margin-right: 8px; }
+  .brand-name { font-size: 0.98rem; }
+  header { padding-left: 12px; padding-right: 12px; }
 }
 
 /* ============= HERO SECTION ============= */
@@ -652,20 +691,33 @@ section {
 }
 
 .contact-info {
-    display: flex;
-    align-items: flex-start;
-    gap: 1.5rem;
-    background: rgba(255,255,255,0.1);
-    padding: 1.5rem;
-    border-radius: 10px;
+  flex-wrap: wrap;        /* allow icon + text to wrap instead of expanding */
+  align-items: center;
+  gap: 0.75rem;
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;           /* allow children to shrink on small screens */
 }
 
-.contact-icon {
-    font-size: 2.5rem;
+.contact-info > * {
+  min-width: 0;
 }
 
-.contact-info h3 {
-    margin-bottom: 0.5rem;
+.contact-info p,
+.contact-info a,
+.contact-info .contact-text {
+  display: block;
+  overflow-wrap: anywhere; /* break long words / emails */
+  word-break: break-word;
+  hyphens: auto;
+  white-space: normal;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.contact-info .contact-text {
+  flex: 1 1 auto;
+  margin: 0;
 }
 
 .contact-info a {
@@ -811,6 +863,75 @@ footer {
         font-size: 1rem;
     }
 }
+
+/* --- Header: force single-line alignment --- */
+header nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Logo stays fixed size and won't shrink below its content */
+.logo {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+/* Keep brand text from forcing wrap */
+.brand-name { white-space: nowrap; }
+
+/* Nav links take remaining space and stay on one line */
+.nav-links {
+  flex: 1 1 auto;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: nowrap;      /* prevent wrapping to next line */
+  overflow: hidden;       /* clip long content instead of wrapping */
+}
+
+/* Prevent individual links from breaking layout */
+.nav-links a {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  max-width: 180px;       /* prevents extremely long labels from expanding header */
+  display: inline-block;
+}
+
+/* Hide mobile toggle on wide screens (already hidden in previous rules) */
+.menu-toggle { display: none; }
+
+/* Mobile behaviour: show toggle, collapse nav into panel */
+@media (max-width: 900px) {
+  .menu-toggle { display: flex; }
+  .nav-links { display: none; }
+  .nav-links.active {
+    display: flex;
+    position: fixed;
+    right: 12px;
+    top: calc(var(--header-h,72px));
+    width: calc(100% - 48px);
+    max-width: 360px;
+    flex-direction: column;
+    gap: 12px;
+    padding: 12px;
+    box-sizing: border-box;
+  }
+}
+
+/* Slightly reduce logo image if header feels cramped */
+.logo-img { width: 40px; height: 40px; }
+
+/* Ensure header content doesn't push page wider */
+header, header * { box-sizing: border-box; }
 
 /* Booking modal styles */
 .modal { display: none; position: fixed; inset: 0; z-index: 1000; align-items: center; justify-content: center; }
@@ -1208,3 +1329,78 @@ footer {
   .carousel-slide.is-back-right { display: none; }
   .carousel-btn { display: none; } /* rely on swipe on small screens */
 }
+
+/* ===== Carousel — mobile fixes (single centered slide, no overflow) ===== */
+@media (max-width: 640px) {
+  /* Ensure the gallery wrapper clips anything that might overflow */
+  .gallery-grid, .carousel {
+    overflow: hidden;
+    max-width: 100%;
+    box-sizing: border-box;
+    height: 260px; /* adjust as needed */
+  }
+
+  /* Track should just be a stacking context for absolutely-positioned slides */
+  .carousel-track {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    left: 0 !important;
+    transform: none !important;
+  }
+
+  /* Make each slide centered and constrained to viewport */
+  .carousel-slide {
+    position: absolute;
+    top: 50%;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    width: 86%;
+    max-width: 92vw;
+    height: 92%;
+    display: block;
+    box-sizing: border-box;
+    margin: 0;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* Only show center slide on mobile for clarity */
+  .carousel-slide.is-center {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translate(-50%, -50%) scale(1) !important;
+    z-index: 40;
+  }
+
+  /* hide all side/back slides to prevent layout spills */
+  .carousel-slide.is-side,
+  .carousel-slide.is-left,
+  .carousel-slide.is-right,
+  .carousel-slide.is-back-left,
+  .carousel-slide.is-back-right {
+    display: none;
+  }
+
+  /* Image fit */
+  .carousel-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    border-radius: 10px;
+  }
+
+  /* Hide large control buttons to avoid overlap, rely on swipe/indicators */
+  .carousel-btn { display: none; }
+
+  /* Ensure indicators are visible but not overflowing */
+  .carousel-indicators {
+    bottom: 8px;
+    gap: 6px;
+  }
+
+  /* remove any horizontal page scroll caused by transforms */
+  html, body { overflow-x: hidden; }
+}
+/* ===== End carousel mobile fixes ===== */
