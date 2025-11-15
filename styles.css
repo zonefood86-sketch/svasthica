@@ -63,6 +63,69 @@ body {
     color: var(--text-light);
 }
 
+/* ===== Responsive overflow & mobile fixes =====
+   Prevent right-side whitespace across viewports,
+   clip transformed carousel slides on small screens,
+   and avoid background-attachment issues on mobile.
+*/
+html, body {
+  max-width: 100vw;
+  overflow-x: hidden; /* force no horizontal scroll */
+}
+
+/* Defensive: ensure children in flexible containers don't force width */
+.container, .container * {
+  box-sizing: border-box;
+  min-width: 0;
+}
+
+/* Ensure images never force overflow */
+img, picture, video, svg {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Carousel: clip overflowing slides on narrower viewports */
+.carousel {
+  overflow: hidden;           /* hide off-canvas slides on small/mid screens */
+  contain: layout paint;      /* optimize rendering and avoid layout spills */
+}
+
+/* For very large screens allow subtle peeking if desired */
+@media (min-width: 1300px) {
+  .carousel { overflow: visible; }
+}
+
+/* Prevent transformed slides from creating horizontal scroll on tiny screens */
+@media (max-width: 420px) {
+  .carousel-slide,
+  .carousel-track {
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    max-width: 100vw;
+  }
+}
+
+/* Hero: avoid background-attachment: fixed on mobile which can cause layout glitches */
+@media (max-width: 900px) {
+  .hero { background-attachment: scroll; }
+}
+
+/* Modal dialog: ensure it never pushes viewport wider */
+.modal-dialog {
+  box-sizing: border-box;
+  max-width: calc(100vw - 32px);
+  overflow: hidden;
+}
+
+/* Defensive: clip any section that may overflow due to transforms */
+section {
+  overflow-x: hidden;
+}
+
+/* end responsive overflow & mobile fixes */
+
 /* ============= HEADER & NAVIGATION ============= */
 header {
     background: var(--white);
